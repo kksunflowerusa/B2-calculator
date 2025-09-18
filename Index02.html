@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h2>運費計算器</h2>
+<h2>B2運費計算器</h2>
 
 <label>長 (公分)：<input type="number" id="length" step="0.01"></label>
 <label>寬 (公分)：<input type="number" id="width" step="0.01"></label>
@@ -30,44 +30,33 @@ async function calculate() {
   const heightCm = parseFloat(document.getElementById('height').value) || 0;
   const weightKg = parseFloat(document.getElementById('weight').value) || 0;
 
-  // 無條件進位轉英吋
   const lengthIn = Math.ceil(lengthCm / 2.54);
   const widthIn  = Math.ceil(widthCm  / 2.54);
   const heightIn = Math.ceil(heightCm / 2.54);
 
-  // 材積重與實際重
   const volumetricLb = Math.ceil((lengthIn * widthIn * heightIn) / 139);
   const actualLb = Math.ceil(weightKg / 0.454);
   const chargeableLb = Math.max(volumetricLb, actualLb);
 
-  // 美金金額
-  const usdTotal = (chargeableLb * (3.99 * 0.75 + 1 * 0.075)).toFixed(2);
+  const usdTotal = (chargeableLb * (3.99 * 0.8 + 1 * 0.75)).toFixed(2);
 
-  // 台幣計算
   let twdTotal = 'N/A';
   let customRateDisplay = 'N/A';
-  const today = new Date().toLocaleDateString(); // 今天日期
+  const today = new Date().toLocaleDateString();
 
   try {
     const res = await fetch('https://script.google.com/macros/s/AKfycbynG8dx7ZcYkHdI6clpdlUelTgwwGjuEx6z98XX19ZCR__rEoScW_IxAmHFuC9Go7o9/exec');
     const data = await res.json();
-    console.log('GAS 回傳：', data);
-
     const usdSell = parseFloat(data.usdCashSell);
     if (!isNaN(usdSell)) {
-      const customRate = usdSell + 0.5;
-      // 顯示到小數點第三位
+      const customRate = usdSell + 0.8;
       customRateDisplay = customRate.toFixed(3);
-      // 台幣金額無條件進位
       twdTotal = Math.ceil(parseFloat(usdTotal) * customRate);
-    } else {
-      console.error('匯率資料無效', data);
     }
   } catch (err) {
-    console.error('fetch 匯率錯誤', err);
+    // 失敗時保持 N/A
   }
 
-  // 顯示結果
   document.getElementById('output').innerHTML = `
     轉換後尺寸：${lengthIn} × ${widthIn} × ${heightIn} 英寸<br>
     材積重：${volumetricLb} 磅<br>
