@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h2>B2運費計算器</h2>
+<h2>運費計算器</h2>
 
 <label>長 (公分)：<input type="number" id="length" step="0.01"></label>
 <label>寬 (公分)：<input type="number" id="width" step="0.01"></label>
@@ -41,7 +41,7 @@ async function calculate() {
   const chargeableLb = Math.max(volumetricLb, actualLb);
 
   // 美金金額
-  const usdTotal = (chargeableLb * (3.99 * 0.8 + 1 * 0.75)).toFixed(2);
+  const usdTotal = (chargeableLb * (3.99 * 0.75 + 1 * 0.075)).toFixed(2);
 
   // 台幣計算
   let twdTotal = 'N/A';
@@ -55,7 +55,7 @@ async function calculate() {
 
     const usdSell = parseFloat(data.usdCashSell);
     if (!isNaN(usdSell)) {
-      const customRate = usdSell + 0.8;
+      const customRate = usdSell + 0.5;
       // 顯示到小數點第三位
       customRateDisplay = customRate.toFixed(3);
       // 台幣金額無條件進位
@@ -82,10 +82,3 @@ async function calculate() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
