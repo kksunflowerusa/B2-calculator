@@ -55,7 +55,7 @@ async function calculate() {
 
     const usdSell = parseFloat(data.usdCashSell);
     if (!isNaN(usdSell)) {
-      const customRate = usdSell + 0.5;
+      const customRate = usdSell + 0.8;
       // 顯示到小數點第三位
       customRateDisplay = customRate.toFixed(3);
       // 台幣金額無條件進位
@@ -82,6 +82,7 @@ async function calculate() {
 </script>
 </body>
 </html>
+
 
 
 
