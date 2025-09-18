@@ -49,7 +49,7 @@ async function calculate() {
   const today = new Date().toLocaleDateString(); // 今天日期
 
   try {
-    const res = await fetch('https://script.google.com/macros/s/AKfycbwIXrYJFsn79jgdIwTVwlg-rb7_i2zYBipXQu4MS27kIvsNOu-NNBaa_d9pHxw7768L/exec');
+    const res = await fetch('https://script.google.com/macros/s/AKfycbynG8dx7ZcYkHdI6clpdlUelTgwwGjuEx6z98XX19ZCR__rEoScW_IxAmHFuC9Go7o9/exec');
     const data = await res.json();
     console.log('GAS 回傳：', data);
 
@@ -82,6 +82,7 @@ async function calculate() {
 </script>
 </body>
 </html>
+
 
 
 
