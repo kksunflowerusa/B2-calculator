@@ -22,8 +22,6 @@
   <label>高 (公分)：<input type="number" id="height" step="0.01"></label>
   <label>重量 (公斤)：<input type="number" id="weight" step="0.01"></label>
 
-  <label><input type="checkbox" id="showDebug"> 顯示除錯資訊</label>
-
   <button onclick="calculate()">計算金額</button>
 
   <div id="output"></div>
@@ -181,12 +179,12 @@ async function calculate() {
     應付金額：$${usdTotal} 美元<br>
     台幣金額：約 NT$${twdTotal}<br>
     使用匯率：1 USD = NT$${customRateDisplay}<br>
-    <div class="small">（匯率計算為：伺服器回傳的 usdSell + 0.8，並以此乘上美金總額後無條件進位顯示）</div>
   `;
 
 }
 </script>
 </body>
 </html>
+
 
 
