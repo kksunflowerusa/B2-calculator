@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>B2運費計算器</title>
+<title>運費計算器（匯率抓取強化）</title>
 <style>
   body {font-family: Arial, sans-serif; max-width: 700px; margin: 30px auto; padding: 20px;}
   label {display:block; margin-top:10px;}
   input[type="number"], input[type="text"] {margin-top:5px; padding:6px; width:100%;}
   button {margin-top:15px; padding:8px 15px;}
   #output {margin-top:20px; padding:12px; border:1px solid #ccc; background:#f9f9f9;}
+  .small {font-size:0.9rem; color:#555;}
 </style>
 </head>
 <body>
-  <h2>B2運費計算器</h2>
+  <h2>B2運費計算器（含匯率抓取強化）</h2>
 
   <label>長 (公分)：<input type="number" id="length" step="0.01"></label>
   <label>寬 (公分)：<input type="number" id="width" step="0.01"></label>
@@ -44,11 +45,13 @@ function findRateInObj(obj) {
       }
     }
   }
-  if (obj.rates) {
-    const r = obj.rates.TWD || obj.rates['TWD'];
-    const v = parseNumberLoose(r);
-    if (Number.isFinite(v) && v > 1 && v < 200) return v;
-  }
+  try {
+    if (obj.rates) {
+      const r = obj.rates.TWD || obj.rates.TW || obj.rates['TWD'];
+      const v = parseNumberLoose(r);
+      if (Number.isFinite(v) && v > 1 && v < 200) return v;
+    }
+  } catch(e){}
   function recur(o, depth=0) {
     if (depth > 6 || o == null) return null;
     if (typeof o === 'number') {
@@ -100,16 +103,34 @@ async function calculate() {
 
   try {
     const res = await fetch(url, { cache: 'no-cache' });
-    const json = await res.json();
-    const found = findRateInObj(json);
-    if (found) {
-      const usdSell = found;
-      const finalRate = Number(usdSell) + 0.8;
-      customRateDisplay = finalRate.toFixed(3);
-      twdTotal = Math.ceil(usdTotalFloat * finalRate);
+    try {
+      const json = await res.json();
+      const found = findRateInObj(json);
+      if (found) {
+        const usdSell = found;
+        const finalRate = Number(usdSell) + 0.8;
+        customRateDisplay = finalRate.toFixed(3);
+        twdTotal = Math.ceil(usdTotalFloat * finalRate);
+      }
+    } catch {
+      const txt = await res.text();
+      const matches = txt.match(/([0-9]+(?:\.[0-9]+)?)/g);
+      if (matches && matches.length) {
+        let found = null;
+        for (const m of matches) {
+          const v = parseNumberLoose(m);
+          if (Number.isFinite(v) && v > 1 && v < 200) { found = v; break; }
+        }
+        if (found) {
+          const usdSell = found;
+          const finalRate = Number(usdSell) + 0.8;
+          customRateDisplay = finalRate.toFixed(3);
+          twdTotal = Math.ceil(usdTotalFloat * finalRate);
+        }
+      }
     }
   } catch (err) {
-    // 失敗時保持 N/A
+    console.error('匯率抓取錯誤:', err);
   }
 
   document.getElementById('output').innerHTML = `
@@ -119,7 +140,7 @@ async function calculate() {
     計費重量：${chargeableLb} 磅<br>
     應付金額：$${usdTotal} 美元<br>
     台幣金額：約 NT$${twdTotal}<br>
-    使用匯率：1 USD = NT$${customRateDisplay}<br>
+    使用匯率：1 USD = NT$${customRateDisplay}
   `;
 }
 </script>
